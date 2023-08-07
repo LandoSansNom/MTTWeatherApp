@@ -19,17 +19,17 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideWeatherRepository(
-        api: ApiCalls
-    ) = WeatherRepository(api)
-
-    @Singleton
-    @Provides
     fun provideWeatherApi(): ApiCalls {
         return Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
             .baseUrl(BASE_URL)
             .build()
             .create(ApiCalls::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideWeatherRepository(api: ApiCalls): WeatherRepository {
+        return WeatherRepository(api)
     }
 }

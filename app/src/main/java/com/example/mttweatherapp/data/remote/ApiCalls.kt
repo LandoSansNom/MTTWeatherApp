@@ -12,5 +12,5 @@ interface ApiCalls {
     fun getWeatherByCity(
         @Query("q") city: String,
         @Query("appid") appid: String = ApiDetails.API_KEY
-    ): WeatherResponse
+    ): Call<WeatherResponse>
 }

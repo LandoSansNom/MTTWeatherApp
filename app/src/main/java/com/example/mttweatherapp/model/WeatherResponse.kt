@@ -1,3 +1,4 @@
+// WeatherResponse.kt
 package com.example.mttweatherapp.model
 
 import com.google.gson.annotations.SerializedName
@@ -6,12 +7,12 @@ data class WeatherResponse(
     @SerializedName("cod") val cod: String,
     @SerializedName("message") val message: Int,
     @SerializedName("cnt") val cnt: Int,
-    @SerializedName("list") val list: List<WeatherItem>,
+    @SerializedName("list") val list: List<WeatherItem>, // Move 'dt' to WeatherItem class
     @SerializedName("city") val city: City
 )
 
 data class WeatherItem(
-    @SerializedName("dt") val dt: Long,
+    @SerializedName("dt") val dt: Long, // Move 'dt' from WeatherResponse class to here
     @SerializedName("main") val main: WeatherMain,
     @SerializedName("weather") val weather: List<WeatherDetail>,
     @SerializedName("dt_txt") val dt_txt: String
