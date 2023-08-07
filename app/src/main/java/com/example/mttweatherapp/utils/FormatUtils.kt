@@ -15,19 +15,19 @@ import java.time.format.TextStyle
 import kotlin.math.roundToInt
 import java.util.*
 
-@RequiresApi(Build.VERSION_CODES.O)
-fun getFormattedDate(date: Int): String {
-    val dateTime = getDateTimeFromEpoch(date)
-    return formatDateParts(getDateFromDateTime(dateTime))
-}
+//@RequiresApi(Build.VERSION_CODES.O)
+//fun getFormattedDate(date: Int): String {
+//    val dateTime = getDateTimeFromEpoch(date)
+//    return formatDateParts(getDateFromDateTime(dateTime))
+//}
+//
+//fun getFormattedTime(date: Int): String {
+//    val dateTime = getDateTimeFromEpoch(date)
+//    return getTimeFromDateTime(dateTime)
+//}
 
-fun getFormattedTime(date: Int): String {
-    val dateTime = getDateTimeFromEpoch(date)
-    return getTimeFromDateTime(dateTime)
-}
-
 @RequiresApi(Build.VERSION_CODES.O)
-fun getDayFromDate(date: Int): String {
+fun getDayFromDate(date: Long): String {
     val newDate = getDateFromDateTime(getDateTimeFromEpoch(date))
     return getWeekDayName(newDate).substring(0, 3)
 }
@@ -81,7 +81,7 @@ fun getTimeFromDateTime(dateTime: String): String {
     return dateTime.substring(i + 1, dateTime.length)
 }
 
-fun getDateTimeFromEpoch(date: Int): String {
+fun getDateTimeFromEpoch(date: Long): String {
     return Instant
         .fromEpochSeconds(date.toLong())
         .toLocalDateTime(TimeZone.currentSystemDefault())

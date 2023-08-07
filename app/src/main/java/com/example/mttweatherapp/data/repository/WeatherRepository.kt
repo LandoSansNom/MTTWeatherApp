@@ -13,7 +13,7 @@ class WeatherRepository @Inject constructor(
 ) {
     suspend fun getWeatherInfo(
         city: String
-    ): Resource<WeatherResponse> {
+    ): Resource<Call<WeatherResponse>> {
         return try {
             val response = api.getWeatherByCity(city, API_KEY)
             Resource.Success(response)

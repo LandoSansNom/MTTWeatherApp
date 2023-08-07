@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.mttweatherapp.R
 import com.example.mttweatherapp.utils.getImageFromUrl
-import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -46,18 +45,18 @@ fun ForecastScreen(viewModel: ForecastViewModel = hiltViewModel()) {
             DailyWeatherList()
 
         }
-//    } else if (loadError.isNotEmpty()) {
-//        RetrySection(error = loadError) {
-//            viewModel.loadDailyWeatherData()
-//        }
-//    } else {
-//        Column(
-//            modifier = Modifier.fillMaxSize(),
-//            verticalArrangement = Arrangement.Center,
-//            horizontalAlignment = Alignment.CenterHorizontally
-//        ) {
-//            CircularProgressIndicator(color = Color.Cyan)
-//        }
+    } else if (loadError.isNotEmpty()) {
+        RetrySection(error = loadError) {
+            viewModel.loadDailyWeatherData()
+        }
+    } else {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            CircularProgressIndicator(color = Color.Cyan)
+        }
     }
 
 }
@@ -76,13 +75,13 @@ fun DailyWeatherList(viewModel: ForecastViewModel = hiltViewModel()) {
             }
         } else {
             items(dailyWeatherList) { weatherList ->
-                weatherList.main?.let { main ->
+                weatherList.let { main ->
                     DailyWeatherListItem(
-                        day = weatherList.dt,
-                        imgUrl = weatherList.weather.firstOrNull()?.icon ?: "",
-                        weatherType = weatherList.weather.firstOrNull()?.main ?: "",
-                        highTemp = main.temp_max ?: 0.0,
-                        lowTemp = main.temp_min ?: 0.0
+                        day = weatherList.day,
+                        imgUrl = weatherList.img,
+                        weatherType = weatherList.weatherType,
+                        highTemp = main.maxTemp ?: 0.0,
+                        lowTemp = main.minTemp ?: 0.0
                     )
                 }
             }
@@ -184,11 +183,11 @@ fun TomorrowWeatherBox(viewModel: ForecastViewModel = hiltViewModel()) {
 
 @Composable
 fun DailyWeatherListItem(
-    day: Long,
+    day: String,
     imgUrl: String,
     weatherType: String,
-    highTemp: Double?,
-    lowTemp: Double?,
+    highTemp: Comparable<*>,
+    lowTemp: Comparable<*>,
 ) {
     Box(
         modifier = Modifier
