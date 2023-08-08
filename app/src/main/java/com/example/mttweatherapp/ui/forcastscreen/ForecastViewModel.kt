@@ -9,13 +9,17 @@ import com.example.mttweatherapp.data.repository.WeatherRepository
 import com.example.mttweatherapp.model.DailyWeatherList
 
 import com.example.mttweatherapp.model.WeatherItem
+import com.example.mttweatherapp.model.WeatherResponse
 
 import com.example.mttweatherapp.utils.Resource
 import com.example.mttweatherapp.utils.getDayFromDate
 
 import com.example.mttweatherapp.utils.getTemperatureInCelsiusInteger
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import retrofit2.Call
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -25,7 +29,7 @@ import javax.inject.Inject
 class ForecastViewModel @Inject constructor(
     private val repository: WeatherRepository
 ) : ViewModel() {
-    var dailyWeatherList = mutableStateOf<List<DailyWeatherList>>(listOf())
+    var dailyWeatherList = mutableStateOf<List<WeatherItem>>(listOf())
 
     var isLoading = mutableStateOf(false)
     var loadError = mutableStateOf("")
@@ -38,49 +42,34 @@ class ForecastViewModel @Inject constructor(
         loadDailyWeatherData()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+    private fun handleWeatherData(response: WeatherResponse?) {
+        if (response != null) {
+            val dailyWeatherList = response.list
+            if (dailyWeatherList.isNotEmpty()) {
+                val tomorrowWeather = dailyWeatherList.getOrNull(0)
+                tomorrowWeatherType.value = tomorrowWeather?.weather?.firstOrNull()?.main ?: ""
+                tomorrowTempHigh.value = getTemperatureInCelsiusInteger(tomorrowWeather?.main?.temp_max ?: 0.0)
+                tomorrowTempLow.value = getTemperatureInCelsiusInteger(tomorrowWeather?.main?.temp_min ?: 0.0)
+                tomorrowImgUrl.value = tomorrowWeather?.weather?.firstOrNull()?.icon ?: ""
+                this@ForecastViewModel.dailyWeatherList.value = dailyWeatherList.subList(1, minOf(dailyWeatherList.size, 8))
+            }
+        }
+    }
+
     fun loadDailyWeatherData() {
         viewModelScope.launch {
             isLoading.value = true
-            when (val result = repository.getWeatherInfo("London")) {
-                is Resource.Success -> {
-                    val weatherResponse = result.data?.execute()?.body()
-                    weatherResponse?.let {
-                        val dailyEntry = it.list.mapIndexed { _, entry ->
-                            val day = getDayFromDate(entry.dt)
-                            val imgUrl = entry.weather[0].icon
-                            val weatherType = entry.weather[0].main
-                            val highTemp = getTemperatureInCelsiusInteger(entry.main.temp_max)
-                            val lowTemp = getTemperatureInCelsiusInteger(entry.main.temp_min)
-                            DailyWeatherList(day, imgUrl, weatherType, highTemp, lowTemp)
-                        }
-                        dailyWeatherList.value = dailyEntry
-                        if (dailyEntry.size >= 1) {
-                            tomorrowWeatherType.value = dailyEntry[0].weatherType
-                            tomorrowTempHigh.value = dailyEntry[0].maxTemp
-                            tomorrowTempLow.value = dailyEntry[0].minTemp
-                            tomorrowImgUrl.value = dailyEntry[0].img
-                        }
-                        if (dailyEntry.size > 1) {
-                            dailyWeatherList.value =
-                                dailyEntry.subList(1, minOf(dailyEntry.size, 8))
-                        } else {
-                            dailyWeatherList.value = emptyList()
-                        }
-                        loadError.value = ""
-                        isLoading.value = false
-                    } ?: run {
-                        // Handle case where weatherResponse is null
-                        loadError.value = "Weather data not available."
-                        isLoading.value = false
-                    }
+            try {
+                // Move the network call to the IO dispatcher using withContext
+                withContext(Dispatchers.IO) {
+                    val result = repository.getWeatherInfo("London")
+                    handleWeatherData(result.data) // Handle the result on the main thread
                 }
-
-                is Resource.Error -> {
-                    Timber.e("error")
-                    loadError.value = result.message!!
-                    isLoading.value = false
-                }
+            } catch (e: Exception) {
+                Timber.e(e, "Error fetching weather data")
+                loadError.value = "Unknown Error occurred."
+            } finally {
+                isLoading.value = false
             }
         }
     }
