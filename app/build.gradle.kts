@@ -1,7 +1,8 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    kotlin("kapt")
+  //kotlin("kapt")
+    id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
 }
 
@@ -74,7 +75,7 @@ dependencies {
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0")
     implementation ("androidx.navigation:navigation-compose:2.4.0-beta02")
 
-    implementation ("com.squareup.retrofit2:converter-gson:2.5.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
 
         //DaggerHilt
     implementation("com.google.dagger:hilt-android:2.44")
@@ -97,6 +98,10 @@ dependencies {
     implementation ("org.jetbrains.kotlinx:kotlinx-datetime:0.3.1")
 
     implementation ("androidx.hilt:hilt-navigation-compose:1.0.0")
+
+    //Okhttp
+    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.2")
+    implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2")
 }
 // Allow references to generated code
 kapt {

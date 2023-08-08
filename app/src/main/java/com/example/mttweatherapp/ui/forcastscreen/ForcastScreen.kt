@@ -74,14 +74,14 @@ fun DailyWeatherList(viewModel: ForecastViewModel = hiltViewModel()) {
                 CircularProgressIndicator(color = Color.Yellow, modifier = Modifier.fillMaxWidth())
             }
         } else {
-            items(dailyWeatherList) { weatherList ->
-                weatherList.let { main ->
+            items(dailyWeatherList) { dailyWeatherListItem ->
+                dailyWeatherListItem.let { weatherList ->
                     DailyWeatherListItem(
-                        day = weatherList.day,
-                        imgUrl = weatherList.img,
-                        weatherType = weatherList.weatherType,
-                        highTemp = main.maxTemp ?: 0.0,
-                        lowTemp = main.minTemp ?: 0.0
+                        day = weatherList.dt_txt, // Use dt_txt property for the day
+                        imgUrl = weatherList.weather[0].icon, // Use the icon from the first weather detail
+                        weatherType = weatherList.weather[0].main, // Use the main weather description from the first weather detail
+                        highTemp = weatherList.main.temp_max ?: 0.0,
+                        lowTemp = weatherList.main.temp_min ?: 0.0
                     )
                 }
             }
