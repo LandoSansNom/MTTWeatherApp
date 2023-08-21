@@ -39,7 +39,7 @@ class ForecastViewModel @Inject constructor(
     var tomorrowImgUrl = mutableStateOf("")
 
     init {
-        loadDailyWeatherData()
+        loadDailyWeatherData(city = "")
     }
 
     private fun handleWeatherData(response: WeatherResponse?) {
@@ -56,13 +56,13 @@ class ForecastViewModel @Inject constructor(
         }
     }
 
-    fun loadDailyWeatherData() {
+    fun loadDailyWeatherData(city: String) {
         viewModelScope.launch {
             isLoading.value = true
             try {
                 // Move the network call to the IO dispatcher using withContext
                 withContext(Dispatchers.IO) {
-                    val result = repository.getWeatherInfo("London")
+                    val result = repository.getWeatherInfo(city)
                     handleWeatherData(result.data) // Handle the result on the main thread
                 }
             } catch (e: Exception) {
