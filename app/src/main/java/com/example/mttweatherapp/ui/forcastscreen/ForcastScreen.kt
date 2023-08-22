@@ -39,15 +39,21 @@ fun ForecastScreen(viewModel: ForecastViewModel = hiltViewModel()) {
     val loadError by remember { viewModel.loadError }
 
     if (!isLoading && loadError.isEmpty()) {
-        Column {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
            TomorrowWeatherBox()
             DailyWeatherList()
 
+                Refresh(){
+                    viewModel.loadDailyWeatherData("London")
+                }
+
+
+
         }
     } else if (loadError.isNotEmpty()) {
         RetrySection(error = loadError) {
-            viewModel.loadDailyWeatherData()
+            viewModel.loadDailyWeatherData("")
         }
     } else {
         Column(
@@ -269,6 +275,22 @@ fun RetrySection(
             modifier = Modifier.align(CenterHorizontally)
         ) {
             Text(text = stringResource(R.string.retry_text), color = Color.White)
+        }
+    }
+}
+
+
+@Composable
+fun Refresh(onRefreshClick: () -> Unit) {
+    Column(
+        horizontalAlignment = CenterHorizontally,
+    ) {
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(
+            onClick = { onRefreshClick() }, // Call the lambda when the button is clicked
+            modifier = Modifier.align(CenterHorizontally)
+        ) {
+            Text(text = stringResource(R.string.refresh_text), color = Color.White)
         }
     }
 }

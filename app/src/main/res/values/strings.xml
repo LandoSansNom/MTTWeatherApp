@@ -2,6 +2,7 @@
     <string name="app_name">MTTWeatherApp</string>
     <string name="later_today_text">Later today</string>
     <string name="retry_text">Retry</string>
+    <string name="refresh_text">Refresh</string>
     <string name="tomorrow_text">Tomorrow</string>
     <string name="current_location_string">New Delhi</string>
     <string name="description">Localized Description</string>
